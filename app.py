@@ -9,7 +9,7 @@ import json
 # === 🔐 Load from secrets ===
 GOOGLE_API_KEY = st.secrets["google"]["api_key"]
 GOOGLE_CX = st.secrets["google"]["search_engine_id"]
-OPENAI_API_KEY = st.secrets["op"]
+OPENAI_API_KEY = st.secrets["openai_api_key"]
 GOOGLE_SHEET_NAME = st.secrets["google"]["sheet_name"]
 GCP_SERVICE_ACCOUNT = st.secrets["gcp_service_account"]
 
@@ -51,7 +51,7 @@ def answer_medical_question(question):
         return "Sorry, I couldn't find reliable sources for this question right now.", []
     context = "\n".join(f"- **{title}**: {snippet}" for title, link, snippet in snippets)
     sources = [(title, link) for title, link, snippet in snippets]
-    prompt = f"""You are a helpful medical assistant. Use only the following trusted sources to answer the user's question in simple English (5–6 short sentences). List the sources at the end.
+    prompt = f"""You are a helpful medical assistant. Use only the following trusted sources to answer the user's question in simple English (5–6 short sentences). List the sources at the end. Do not provide medical advice. Always recommend consulting a healthcare provider.
 
 Snippets:
 {context}
@@ -64,7 +64,7 @@ Answer:"""
             messages=[{"role": "user", "content": prompt}]
         )
         answer = response.choices[0].message.content.strip()
-        return answer, sources
+        return answer + "\n\n**Disclaimer:** This response is not a substitute for professional medical advice. Always consult your healthcare provider.", sources
     except Exception as e:
         return f"OpenAI API Error: {e}", []
 
@@ -76,13 +76,17 @@ st.markdown("Ask your medical question and get a simple, reliable answer with tr
 if "history" not in st.session_state:
     st.session_state.history = []
 
+user_age = st.sidebar.text_input("Your Age (optional)")
+user_gender = st.sidebar.selectbox("Your Gender (optional)", ["Prefer not to say", "Male", "Female", "Other"])
+
 tab1, tab2 = st.tabs(["🧠 Ask Question", "📜 History"])
 
 with tab1:
     question = st.text_input("Enter your medical question:", placeholder="e.g. What are symptoms of vitamin D deficiency?")
     if st.button("Get Answer") and question:
+        full_query = f"For a {user_age}-year-old {user_gender.lower()}, {question}" if user_age or user_gender != "Prefer not to say" else question
         with st.spinner("Searching trusted sources and generating response..."):
-            answer, sources = answer_medical_question(question)
+            answer, sources = answer_medical_question(full_query)
 
         st.markdown("### ✅ Answer")
         st.write(answer)
