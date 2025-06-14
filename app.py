@@ -9,7 +9,7 @@ import json
 # === 🔐 Load from secrets ===
 GOOGLE_API_KEY = st.secrets["google"]["api_key"]
 GOOGLE_CX = st.secrets["google"]["search_engine_id"]
-OPENAI_API_KEY = st.secrets["openai_api_key"]
+OPENAI_API_KEY = st.secrets["openaikey"]
 GOOGLE_SHEET_NAME = st.secrets["google"]["sheet_name"]
 GCP_SERVICE_ACCOUNT = st.secrets["gcp_service_account"]
 
