@@ -51,13 +51,23 @@ def answer_medical_question(question):
         return "Sorry, I couldn't find reliable sources for this question right now.", []
     context = "\n".join(f"- **{title}**: {snippet}" for title, link, snippet in snippets)
     sources = [(title, link) for title, link, snippet in snippets]
-    prompt = f"""You are a helpful medical assistant. Use only the following trusted sources to answer the user's question in simple English (5–6 short sentences). List the sources at the end. Do not provide medical advice. Always recommend consulting a healthcare provider.
+    prompt = f"""
+You are a helpful and friendly medical assistant.
+
+Your job is to write a clear and easy-to-understand answer using only the trusted snippets below. 
+Write the answer in simple English with short sentences (aim for 3–4 sentences max). 
+Avoid complex medical terms if possible, and explain in plain language. 
+If needed, you can say "Talk to a doctor to be sure."
+
+After the answer, include a short list of the sources used.
 
 Snippets:
 {context}
 
 Question: {question}
-Answer:"""
+
+Answer:
+"""
     try:
         response = client.chat.completions.create(
             model="gpt-4o",
