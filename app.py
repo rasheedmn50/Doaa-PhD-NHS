@@ -44,7 +44,7 @@ TRUSTED_SITES = [
 ]
 
 # === 🤖 OpenAI Client ===
-client = OpenAI(api_key=OPENAI_API_KEY)
+client = OpenAI(api_key="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")
 
 # === Google Custom Search ===
 def get_medical_snippets(query, num_results=5):
