@@ -149,11 +149,18 @@ gc = gspread.authorize(creds)
 feedback_sheet = gc.open(GOOGLE_SHEET_NAME).sheet1
 
 with st.form("feedback_form"):
-    name = st.text_input("Your name")
-    comments = st.text_area("Your feedback")
+    st.markdown("*(Optional)* Please rate your experience and provide feedback regarding the **accuracy of the information**, **reliability of the sources**, and your **overall experience** using this assistant.")
+    
+    # Star rating input
+    rating = st.radio("How would you rate your experience?", ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"], index=4, horizontal=True)
+    
+    # Feedback comments input
+    comments = st.text_area("Your Feedback")
+    
     if st.form_submit_button("Submit Feedback"):
-        feedback_sheet.append_row([name, comments])
+        feedback_sheet.append_row([rating, comments])
         st.success("✅ Thank you for your feedback!")
+
 
 # === Footer ===
 st.markdown("---")
